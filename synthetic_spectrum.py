@@ -1,6 +1,6 @@
 from numpy.polynomial import Polynomial as P 
 from astropy.modeling import models 
-#import moments
+import moments
 
 class SyntheticSpectrum:
     """
