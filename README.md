@@ -9,7 +9,7 @@ fitting a smooth baseline, and return the final cleaned spectrum.
 
 Here is a synthetic spectrum simulating an NH3 (1-1) line profile as seen by RAMPS.
 
-<img src="example_graphics/total_synthetic.png?raw=True" alt="Synthetic" style="width: 100px;"/>
+<img src="example_graphics/total_synthetic.png?raw=True" alt="Synthetic" width ="100"/>
 
 After median filtering and downsampling to remove the spikes, we mask out the regions where 
 there is signal by identifying where the local-standard-deviation is much higher than typical
