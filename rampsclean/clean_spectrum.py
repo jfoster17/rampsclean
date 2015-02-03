@@ -32,6 +32,7 @@ and small compared to variations in the baseline.
 from scipy.interpolate import UnivariateSpline 
 import numpy as np
 import scipy.ndimage as im
+import numpy.ma as ma
 
 def baseline_and_deglitch(spec,filter_width=7,ww=20):
     """

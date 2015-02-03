@@ -33,7 +33,7 @@ class SyntheticSpectrum:
         else:
             self.p = parameters
         self.noisy_spectrum = self.make_noisy_spectrum()
-        self.baseline_spectrum,self.baseline_poly = self.make_baseline(do_random_baseline)
+        self.baseline_spectrum,self.baseline_poly = self.make_baseline(self.p['do_random_baseline'])
         self.nh3_spectrum = self.make_nh3_spectrum()
         self.spikes_spectrum,self.spike_channels,self.spike_amps = self.make_spikes()
         
@@ -42,7 +42,7 @@ class SyntheticSpectrum:
         Calculate the integrated intensity for the test spectrum
         """
         self.noise_free = self.nh3_spectrum
-        mom0 = moments.get_integrated_intensity(self.noise_free)
+        mom0 = moments.get_integrated_intensity(self.noise_free,0) #no noise
         self.mom0 = mom0
         return(mom0)
         
@@ -61,7 +61,7 @@ class SyntheticSpectrum:
         if do_nh3:
             total += self.nh3_spectrum
         if do_spikes:
-            total += self.spikes_spetrum
+            total += self.spikes_spectrum
         self.total_spectrum = total
         return(self.total_spectrum)
         

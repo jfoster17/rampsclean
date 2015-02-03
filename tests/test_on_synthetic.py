@@ -1,6 +1,6 @@
 import rampsclean.synthetic_spectrum as snythetic_spectrum
 import rampsclean.moments
-import rampsclean.clean_spectrum
+import rampsclean.clean_spectrum as clean_spectrum
 
 def test_mom0():
     a = snythetic_spectrum.SyntheticSpectrum()

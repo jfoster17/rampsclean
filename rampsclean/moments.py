@@ -5,6 +5,7 @@ Currently:
 Moment 0 (integrated intensity) and error
 
 """
+import numpy as np
 import numpy.ma as ma
 
 def get_integrated_intensity(input_spectrum,noise_estimate):
