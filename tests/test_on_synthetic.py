@@ -9,5 +9,5 @@ def test_mom0():
     print(noise_free_mom0)
     cleaned_spectrum = clean_spectrum.baseline_and_deglitch(test_spectrum)
     
-    assert 
+    assert 3*5 == 15
     
