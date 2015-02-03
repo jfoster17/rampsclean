@@ -2,6 +2,8 @@ import numpy as np
 from numpy.polynomial import Polynomial as P 
 from astropy.modeling import models 
 import moments
+import matplotlib.pyplot as plt
+import os,sys
 
 class SyntheticSpectrum:
     """
@@ -15,7 +17,7 @@ class SyntheticSpectrum:
     of the spectrum (for testing purposes).
     """
     
-    def __init__(self,parameters=None):
+    def __init__(self,parameters=None,**kwargs):
         if not parameters:
             self.p = {
                 "spec_length" : 16384, #Spectrum properties
@@ -32,7 +34,7 @@ class SyntheticSpectrum:
             }
         else:
             self.p = parameters
-        self.noisy_spectrum = self.make_noisy_spectrum()
+        self.noisy_spectrum = self.make_noisy_spectrum(**kwargs)
         self.baseline_spectrum,self.baseline_poly = self.make_baseline(self.p['do_random_baseline'])
         self.nh3_spectrum = self.make_nh3_spectrum()
         self.spikes_spectrum,self.spike_channels,self.spike_amps = self.make_spikes()
@@ -46,7 +48,7 @@ class SyntheticSpectrum:
         self.mom0 = mom0
         return(mom0)
         
-    def generate_spectrum(self,do_noise=True,do_base=True,do_nh3=True,do_spikes=True):
+    def generate_spectrum(self,do_noise=True,do_base=True,do_nh3=True,do_spikes=True,**kwargs):
         """
         Sum together components of spectrum
         
@@ -63,9 +65,19 @@ class SyntheticSpectrum:
         if do_spikes:
             total += self.spikes_spectrum
         self.total_spectrum = total
+        if "outdir" in kwargs:
+            try:
+                os.mkdir(kwargs["outdir"])
+            except OSError:
+                pass
+            plt.figure()
+            plt.plot(total,color="blue",alpha=0.5,)
+            plt.xlim(0,len(total))
+            plt.title("Total Synthetic")
+            plt.savefig(kwargs["outdir"]+"/total_synthetic.png")
         return(self.total_spectrum)
         
-    def make_noisy_spectrum(self):
+    def make_noisy_spectrum(self,**kwargs):
         """
         Generate noise for a fake spectrum.
         

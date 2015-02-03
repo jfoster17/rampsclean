@@ -33,8 +33,11 @@ from scipy.interpolate import UnivariateSpline
 import numpy as np
 import scipy.ndimage as im
 import numpy.ma as ma
+import os,sys
+import matplotlib.pyplot as plt
 
-def baseline_and_deglitch(spec,filter_width=7,ww=20):
+
+def baseline_and_deglitch(spec,filter_width=7,ww=20,**kwargs):
     """
     Do baseline subtraction and remove spikes via median filter
     """
@@ -42,7 +45,19 @@ def baseline_and_deglitch(spec,filter_width=7,ww=20):
     downsampled_spec = im.median_filter(spec,filter_width)[::filter_width]
     y = make_local_stddev(downsampled_spec,ww=ww)
     no_signal_spec = mask_spectrum(y,ww,downsampled_spec,keep_signal=False)
-    baseline = get_spline_baseline(no_signal_spec)
+    baseline = get_spline_baseline(no_signal_spec)  
+    if "outdir" in kwargs:
+        try:
+            os.mkdir(kwargs["outdir"])
+        except OSError:
+            pass
+        plt.figure()
+        plt.plot(downsampled_spec,color="blue",alpha=0.1,)
+        plt.plot(no_signal_spec,color="blue",alpha=0.6,)
+        plt.plot(baseline,color="red",alpha=1.0,)
+        plt.xlim(0,len(downsampled_spec))
+        plt.title("Baseline Fit")
+        plt.savefig(kwargs["outdir"]+"/baseline-fit.png")
     final_spec = downsampled_spec - baseline
     return(final_spec)
     

@@ -9,8 +9,10 @@ import numpy as np
 import numpy.ma as ma
 import clean_spectrum
 from scipy import ndimage
+import os,sys
+import matplotlib.pyplot as plt
 
-def identify_signal_estimate_noise(input_spectrum,do_expansion=True,ww=20):
+def identify_signal_estimate_noise(input_spectrum,do_expansion=True,ww=20,**kwargs):
     """
     Use the local-standard-deviation to identify signal
     
@@ -23,14 +25,29 @@ def identify_signal_estimate_noise(input_spectrum,do_expansion=True,ww=20):
     signal channels down to a lower level. Generally this 
     should improve the fidelity of singal recovery.
     """
+    old_mask = input_spectrum
     y = clean_spectrum.make_local_stddev(input_spectrum,ww=ww)
     k_est = np.median(y)
     signal_spec = clean_spectrum.mask_spectrum(y,ww,input_spectrum,keep_signal=True)
     if do_expansion:
-        basic_mask = signal_spec.mask
-        eroded_mask = ndimage.binary_erosion(basic_mask,iterations=2)
-        dilated_mask = ndimage.binary_dilation(eroded_mask,iterations=5)
-        signal_spec.mask = dilated_mask
+        if "outdir" in kwargs:
+            old_mask = signal_spec.copy()
+        basic_mask = ~signal_spec.mask
+        eroded_mask = ndimage.binary_erosion(basic_mask,structure=np.ones((3)))
+        dilated_mask = ndimage.binary_dilation(eroded_mask,structure=np.ones((31)))
+        signal_spec.mask = ~dilated_mask
+    if "outdir" in kwargs:
+        try:
+            os.mkdir(kwargs["outdir"])
+        except OSError:
+            pass
+        plt.figure()
+        plt.plot(input_spectrum,color="blue",alpha=0.4,lw=2)
+        plt.plot(old_mask,color="green",alpha=0.4,lw=2)
+        plt.plot(signal_spec,color="red",alpha=1.0,lw=1)
+        plt.xlim(0,len(input_spectrum))
+        plt.title("Identify Regions for Moment")
+        plt.savefig(kwargs["outdir"]+"/moment-mask.png")
     return(signal_spec,k_est)
 
 
