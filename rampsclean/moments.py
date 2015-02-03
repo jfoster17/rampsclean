@@ -32,6 +32,8 @@ def identify_signal_estimate_noise(input_spectrum,do_expansion=True,ww=20,**kwar
     if do_expansion:
         if "outdir" in kwargs:
             old_mask = signal_spec.copy()
+        #Mask is true where there is not signal, so need to 
+        #reverse the mask sense to apply binary operations sensibly 
         basic_mask = ~signal_spec.mask
         eroded_mask = ndimage.binary_erosion(basic_mask,structure=np.ones((3)))
         dilated_mask = ndimage.binary_dilation(eroded_mask,structure=np.ones((31)))
