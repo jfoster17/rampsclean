@@ -1,9 +1,9 @@
-from snythetic_spectrum import SyntheticSpectrum
-import moments
-import clean_spectrum
+import rampsclean.synthetic_spectrum as snythetic_spectrum
+import rampsclean.moments
+import rampsclean.clean_spectrum
 
 def test_mom0():
-    a = SnytheticSpectrum()
+    a = snythetic_spectrum.SyntheticSpectrum()
     test_spectrum = a.generate_spectrum()
     noise_free_mom0 = a.calculate_integrated_intensity()
     print(noise_free_mom0)

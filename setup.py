@@ -33,6 +33,6 @@ setup(name='rampsclean',
       author='Jonathan Foster',
       author_email='jonathan.b.foster@yale.edu',
       url='https://github.com/jfoster17/rampsclean',
-      packages=['rampsclean'],
+      packages=['rampsclean',],
       cmdclass = {'test': PyTest},
      )

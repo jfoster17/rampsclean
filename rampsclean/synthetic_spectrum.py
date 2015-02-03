@@ -1,3 +1,4 @@
+import numpy as np
 from numpy.polynomial import Polynomial as P 
 from astropy.modeling import models 
 import moments
@@ -17,17 +18,17 @@ class SyntheticSpectrum:
     def __init__(self,parameters=None):
         if not parameters:
             self.p = {
-                "spec_length" = 16384, #Spectrum properties
-                "noise_level" = 0.02, #Noise properties
-                "baseline_poly_order" = 2,  #Baseline properties
-                "baseline_poly_params" = np.array([-0.1,+1e-6,-5e-10,+1e-13]),
-                "do_random_baseline" = False,
-                "nh3_amplitude" = 4.0, #NH3 spectrum properties
-                "nh3_width" = 40.,
-                "nh3_position" = 2000.,
-                "nh3_offset" = 300.,
-                "num_spikes" = 10.,
-                "spikes_amp"  = 4.,
+                "spec_length" : 16384, #Spectrum properties
+                "noise_level" : 0.02, #Noise properties
+                "baseline_poly_order" : 2,  #Baseline properties
+                "baseline_poly_params" : np.array([-0.1,+1e-6,-5e-10,+1e-13]),
+                "do_random_baseline" : False,
+                "nh3_amplitude" : 4.0, #NH3 spectrum properties
+                "nh3_width" : 40.,
+                "nh3_position" : 2000.,
+                "nh3_offset" : 300.,
+                "num_spikes" : 10.,
+                "spikes_amp"  : 4.,
             }
         else:
             self.p = parameters
@@ -52,7 +53,7 @@ class SyntheticSpectrum:
         Select which components to sum together
         and return total spectrum for analysis
         """
-        total = np.zeros(self.p.spec_length)
+        total = np.zeros(self.p['spec_length'])
         if do_noise:
             total += self.noisy_spectrum
         if do_base:
@@ -71,8 +72,8 @@ class SyntheticSpectrum:
         Makes a fake spectrum of length spec_length with 
         specified Gaussian noise ~N(0,k**2)
         """
-        k = self.p.noise_level
-        noisy_spectrum = k * np.random.randn(self.p.spec_length)
+        k = self.p['noise_level']
+        noisy_spectrum = k * np.random.randn(self.p['spec_length'])
         return(noisy_spectrum)
         
     def make_baseline(self,do_random_baseline=False):
@@ -85,17 +86,17 @@ class SyntheticSpectrum:
         Return the polynomial (encoding the parameters)
         and the baseline (polynomial evaluated over spectrum)
         """
-        b = self.p.baseline_poly_params
-        n = self.p.baseline_poly_order
+        b = self.p['baseline_poly_params']
+        n = self.p['baseline_poly_order']
         if do_random_baseline:
             b = np.random.rand(n+1)
             #If we just have random coefficients in b
             #then higher-order terms will hugely dominate
             for i,bb in enumerate(b):
-                bb = bb/(self.p.spec_length**i)
+                bb = bb/(self.p['spec_length']**i)
         #print(b)
         poly = P(b)
-        baseline = poly(np.arange(self.p.spec_length))
+        baseline = poly(np.arange(self.p['spec_length']))
         return(baseline,poly)
         
     def make_nh3_spectrum(self):
@@ -108,16 +109,16 @@ class SyntheticSpectrum:
         central position p (with satellites at fixed 
         p-2q, p-q, p+q, p+2q)
         """
-        a = self.p.nh3_amplitude
-        w = self.p.nh3_width
-        p = self.p.nh3_position
-        q = self.p.nh3_offset
+        a = self.p['nh3_amplitude']
+        w = self.p['nh3_width']
+        p = self.p['nh3_position']
+        q = self.p['nh3_offset']
         gcen = models.Gaussian1D(amplitude=a,    mean=p, stddev=w)
         g_s1 = models.Gaussian1D(amplitude=a/3., mean=p-q, stddev=w)
         g_s2 = models.Gaussian1D(amplitude=a/3., mean=p-2*q, stddev=w)
         g_s3 = models.Gaussian1D(amplitude=a/3., mean=p+q, stddev=w)
         g_s4 = models.Gaussian1D(amplitude=a/3., mean=p+2*q, stddev=w)
-        emp = np.arange(self.p.spec_length)
+        emp = np.arange(self.p['spec_length'])
         nh3_spectrum = gcen(emp)+g_s1(emp)+g_s2(emp)+g_s3(emp)+g_s4(emp)
         return(nh3_spectrum)
         
@@ -127,13 +128,13 @@ class SyntheticSpectrum:
 
         Positions are random (c) and amplitudes (z) are exponential 
         """
-        amplitude = self.p.spikes_amp
-        num = self.p.num_spikes
-        c = np.random.randint(0,self.p.spec_length,num)
+        amplitude = self.p['spikes_amp']
+        num = self.p['num_spikes']
+        c = np.random.randint(0,self.p['spec_length'],num)
         z = np.random.exponential(scale=amplitude,size=num)
         #print(c)
         #print(z)
-        emp = np.zeros(self.p.spec_length)
+        emp = np.zeros(self.p['spec_length'])
         for ci,zi in zip(c,z):
             emp[ci] += zi
         return(emp,c,z)
