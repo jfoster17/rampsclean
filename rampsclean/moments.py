@@ -48,6 +48,8 @@ def identify_signal_estimate_noise(input_spectrum,do_expansion=True,ww=20,**kwar
         plt.plot(old_mask,color="green",alpha=0.4,lw=2)
         plt.plot(signal_spec,color="red",alpha=1.0,lw=1)
         plt.xlim(0,len(input_spectrum))
+        plt.ylabel("Spectral Intensity")
+        plt.xlabel("Spectral Pixel")
         plt.title("Identify Regions for Moment")
         plt.savefig(kwargs["outdir"]+"/moment-mask.png")
     return(signal_spec,k_est)

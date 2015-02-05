@@ -56,6 +56,8 @@ def baseline_and_deglitch(spec,filter_width=7,ww=20,**kwargs):
         plt.plot(no_signal_spec,color="blue",alpha=0.6,)
         plt.plot(baseline,color="red",alpha=1.0,)
         plt.xlim(0,len(downsampled_spec))
+        plt.ylabel("Spectral Intensity")
+        plt.xlabel("Spectral Pixel")
         plt.title("Baseline Fit")
         plt.savefig(kwargs["outdir"]+"/baseline-fit.png")
     final_spec = downsampled_spec - baseline
