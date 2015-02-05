@@ -44,7 +44,7 @@ def baseline_and_deglitch(spec,filter_width=7,ww=20,**kwargs):
     #Median filter both removes spikes and increases speed
     downsampled_spec = im.median_filter(spec,filter_width)[::filter_width]
     y = make_local_stddev(downsampled_spec,ww=ww)
-    no_signal_spec = mask_spectrum(y,ww,downsampled_spec,keep_signal=False)
+    no_signal_spec = mask_spectrum(y,ww,downsampled_spec,keep_signal=False,**kwargs)
     baseline = get_spline_baseline(no_signal_spec)  
     if "outdir" in kwargs:
         try:
@@ -72,7 +72,7 @@ def get_spline_baseline(mspec):
     return(fit_baseline)
     
 
-def mask_spectrum(y,ww,spec,stddevlev=3,keep_signal=True):
+def mask_spectrum(y,ww,spec,stddevlev=3,keep_signal=True,**kwargs):
     """
     Mask spectrum based on y-array
     
@@ -87,6 +87,20 @@ def mask_spectrum(y,ww,spec,stddevlev=3,keep_signal=True):
         mspec = ma.masked_where(y < upperlim,spec)
     else:
         mspec = ma.masked_where(y > upperlim,spec)
+    if "outdir" in kwargs:
+        try:
+            os.mkdir(kwargs["outdir"])
+        except OSError:
+            pass
+        plt.figure()
+        plt.plot(y,color="blue",alpha=0.5,)
+        plt.xlim(0,len(y))
+        plt.axhline(upperlim,color='red',ls=":")
+        plt.ylabel("Local Standard Deviation (y-array)")
+        plt.xlabel("Spectral Pixel")
+        plt.title("Local Standard Deviation Masking")
+        plt.savefig(kwargs["outdir"]+"/local-stddev.png")
+        
     return(mspec)
 
 def rolling_window(a,window):

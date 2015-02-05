@@ -15,7 +15,7 @@ def check_mom0(a,**kwargs):
     signal_spectrum,noise_estimate = moments.identify_signal_estimate_noise(cleaned_spectrum,**kwargs)
     cleaned_mom0,cleaned_mom0_err = moments.get_integrated_intensity(
                                     signal_spectrum,noise_estimate,downsample_fact=7)
-    assert abs(cleaned_mom0-noise_free_mom0) < 4*cleaned_mom0_err
+    assert abs(cleaned_mom0-noise_free_mom0) < 5*cleaned_mom0_err
     
 
 def test_mom0_highSNR():
