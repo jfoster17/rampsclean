@@ -11,9 +11,15 @@ Here is a synthetic spectrum simulating an NH3 (1-1) line profile as seen by RAM
 
 <img src="example_graphics/total_synthetic.png?raw=True" alt="Synthetic" width ="300"/>
 
-After median filtering and downsampling to remove the spikes, we mask out the regions where 
-there is signal by identifying where the local-standard-deviation is much higher than typical
-and fit a smooth baseline to the rest of the spectrum. In this case we are using a spline fit.
+After median filtering and downsampling to remove the spikes, we identify portions of 
+the spectrum where the local-standard-deviation is much higher than typical. This approach
+works much better than identifying signal based on the intensity/strength of the signal in 
+the case where the amplitude of the baseline is large (at least in parts of the spectrum).
+
+<img src="example_graphics/local-stddev.png?raw=True" alt="Synthetic" width ="300"/>
+
+We mask out the regions where we have identified signal and fit a smooth baseline to the r
+est of the spectrum. In this case we are using a spline fit.
 
 <img src="example_graphics/baseline-fit.png?raw=True" alt="Synthetic" width ="300"/>
 

@@ -73,6 +73,8 @@ class SyntheticSpectrum:
             plt.figure()
             plt.plot(total,color="blue",alpha=0.5,)
             plt.xlim(0,len(total))
+            plt.ylabel("Spectral Intensity")
+            plt.xlabel("Spectral Pixel")
             plt.title("Total Synthetic")
             plt.savefig(kwargs["outdir"]+"/total_synthetic.png")
         return(self.total_spectrum)
