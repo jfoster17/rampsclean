@@ -30,6 +30,7 @@ is large compared to the width of real features
 and small compared to variations in the baseline. 
 """
 from scipy.interpolate import UnivariateSpline 
+from numpy.polynomial import Polynomial as P
 import numpy as np
 import scipy.ndimage as im
 import numpy.ma as ma
@@ -44,8 +45,12 @@ def baseline_and_deglitch(spec,filter_width=7,ww=20,**kwargs):
     #Median filter both removes spikes and increases speed
     downsampled_spec = im.median_filter(spec,filter_width)[::filter_width]
     y = make_local_stddev(downsampled_spec,ww=ww)
+    k_est = np.median(y)
     no_signal_spec = mask_spectrum(y,ww,downsampled_spec,keep_signal=False,**kwargs)
-    baseline = get_spline_baseline(no_signal_spec)  
+    if basetype=="spline":
+        baseline = get_spline_baseline(no_signal_spec)
+    elif basetype=="poly":
+        baseline = get_poly_baseline(no_signal_spec,k_est)
     if "outdir" in kwargs:
         try:
             os.mkdir(kwargs["outdir"])
@@ -72,6 +77,42 @@ def get_spline_baseline(mspec):
     spl = UnivariateSpline(xxx, mspec, w=~w)
     fit_baseline = spl(xxx)
     return(fit_baseline)
+    
+def get_polynomial_baseline(mspec,k_est,debug=True):
+    """
+    Fit for the best polynomial baseline according to BIC
+    
+    Search polynomial fits from order 0 to order 7 and
+    use the BIC to select the best fit. This fit should 
+    also have an rms error within a factor of two of 
+    the estimated noise (k_est). If this is not the case
+    then the baseline fit is most likely bad. 
+    """
+    d = np.arange(0,7)
+    rms_err = np.zeros(d.shape)
+    
+    xx = np.arange(mspec.size)
+    yy = mspec
+    
+    for i in range(len(d)):
+        p = ma.polyfit(xx,yy,d[i])
+        basepoly = P(p[::-1])
+        rms_err[i] = np.sqrt(np.sum((basepoly(xx) - yy) **2) / len(yy))
+    BIC = np.sqrt(len(yy)) * rms_err / k_est + 1 * d * np.log(len(yy))
+    if debug:
+        fig = plt.figure(figsize=(12,5))
+        ax = fig.add_subplot(211)
+        ax.plot(d,rms_err,'-k',label='rms-err')
+        ax.legend(loc=2)
+        ax.axhline(k_est)
+        ax = fig.add_subplot(212)
+        ax.plot(d,BIC,'-k',label='BIC')
+        ax.legend(loc=2)
+        plt.savefig("debugplot.pdf")
+
+        
+        
+    
     
 
 def mask_spectrum(y,ww,spec,stddevlev=3,keep_signal=True,**kwargs):
