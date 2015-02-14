@@ -11,7 +11,7 @@ def check_mom0(a,**kwargs):
     test_spectrum = a.generate_spectrum(**kwargs)
     noise_free_mom0,noise_free_mom0_err = a.calculate_integrated_intensity()
     #print(noise_free_mom0)
-    cleaned_spectrum = clean_spectrum.baseline_and_deglitch(test_spectrum,filter_width=7,basetype="smoothed_data",**kwargs)
+    cleaned_spectrum = clean_spectrum.baseline_and_deglitch(test_spectrum,filter_width=7,basetype="spline",**kwargs)
     signal_spectrum,noise_estimate = moments.identify_signal_estimate_noise(cleaned_spectrum,**kwargs)
     cleaned_mom0,cleaned_mom0_err = moments.get_integrated_intensity(
                                     signal_spectrum,noise_estimate,downsample_fact=7)

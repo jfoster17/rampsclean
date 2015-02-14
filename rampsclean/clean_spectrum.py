@@ -42,6 +42,11 @@ import matplotlib.pyplot as plt
 def baseline_and_deglitch(spec,filter_width=7,ww=20,basetype="spline",**kwargs):
     """
     Do baseline subtraction and remove spikes via median filter
+    
+    ww is a critical parameter to control with width in which to calculate
+    the local-standard-deviation. This has to be set by looking at real data.
+    In the L10 data, ww = 80 seems to work well. ww = 20 is fine for the 
+    synthetic lines, but these tend to be narrower than reality.
     """
     #Median filter both removes spikes and increases speed
     downsampled_spec = im.median_filter(spec,filter_width)[::filter_width]
@@ -86,7 +91,7 @@ def get_smoothed_data_baseline(mspec):
     Calculate the baseline as a smoothed version of the input data
     
     """
-    filter_width = 21
+    filter_width = 41
     xxx = np.arange(mspec.size)
     bx = np.arange(mspec.size)
     bx = bx[~mspec.mask]
